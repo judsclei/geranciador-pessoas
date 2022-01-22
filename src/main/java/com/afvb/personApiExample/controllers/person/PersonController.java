@@ -1,68 +1,54 @@
 package com.afvb.personApiExample.controllers.person;
 
 import com.afvb.personApiExample.dto.MessageResponseDTO;
-import com.afvb.personApiExample.models.person.Person;
-import com.afvb.personApiExample.repositorys.person.PersonRepository;
+import com.afvb.personApiExample.dto.request.person.PersonDTO;
+import com.afvb.personApiExample.exception.person.PersonNotFoundException;
+import com.afvb.personApiExample.services.person.PersonService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/v1/people")
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class PersonController {
 
-    private PersonRepository personRepository;
+    private PersonService personService;
 
-    @Autowired
-    public PersonController(PersonRepository personRepository) {
-        this.personRepository = personRepository;
-    }
-
-   /* @GetMapping("/")
-    public List<JornadaTrabalho> obterJornadas()
+    @GetMapping("/")
+    public List<PersonDTO> getPersons()
     {
-        return jornadaTrabalhoService.ObterJornadas();
+        return personService.GetPersons();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<JornadaTrabalho> obterJornadaPorId(@PathVariable("id") Long id) throws Exception
+    public PersonDTO getById(@PathVariable("id") Long id) throws PersonNotFoundException
     {
-        return ResponseEntity.ok(jornadaTrabalhoService.ObterJornadaPorId(id).orElseThrow(() -> new NoSuchElementException("Jornada não encontrada.")));
-    }*/
-
-    @PostMapping("/")
-    public MessageResponseDTO createPerson(@RequestBody Person person)
-    {
-       Person savedPerson = personRepository.save(person);
-       return MessageResponseDTO
-               .builder()
-               .message("Created Person with ID " + savedPerson.getId())
-               .build();
+        return personService.GetPersonById(id);
     }
 
-   /* @PutMapping("/")
-    public JornadaTrabalho alterarJornada(@RequestBody JornadaTrabalho jornadaTrabalho) {
+    @PostMapping("/")
+    @ResponseStatus(HttpStatus.CREATED)
+    public MessageResponseDTO createPerson(@RequestBody @Valid PersonDTO personDTO)
+    {
+       return personService.Create(personDTO);
+    }
 
-        return jornadaTrabalhoService.Atualizar(jornadaTrabalho);
+   @PutMapping("/{id}")
+    public MessageResponseDTO updatePerson(@PathVariable Long id, @RequestBody @Valid PersonDTO personDTO) throws PersonNotFoundException
+   {
+
+        return personService.Update(id, personDTO);
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus excluirJornada(@PathVariable("id") Long id) throws Exception
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePerson(@PathVariable("id") Long id) throws PersonNotFoundException
     {
-        try{
-            this.jornadaTrabalhoService.Exlcluir(id);
-        }catch (Exception ex)
-        {
-            System.out.println(ex.getMessage());
-            HttpStatus badRequest = HttpStatus.BAD_REQUEST;
-            return badRequest;
-
-        }
-        HttpStatus accepted = HttpStatus.ACCEPTED;
-        return accepted;
-    }*/
+        personService.Delete(id);
+    }
 }
