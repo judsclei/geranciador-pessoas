@@ -7,10 +7,10 @@ import org.hibernate.envers.Audited;
 import javax.persistence.*;
 
 @Data
-@AllArgsConstructor // substitui o construtor padrao
-@NoArgsConstructor // substitui o construtor em branco
-@EqualsAndHashCode // adiciona hashcode e equals
-@Builder // ajuda nos testes e criaçao de objeto DTO (Sao anotaçoes do plugin lombok)
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
+@Builder
 @Entity
 @Audited
 public class Phone {
